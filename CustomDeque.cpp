@@ -11,14 +11,15 @@ public:
 	void addFront(T value) {
 		if (count == capacity || count + 1 == capacity) {
 			resize(dArray);
-			shiftArray(value);
+			tempShift(value);
 		}
 		else {
 			if (isEmpty()) {
 				dArray[0] = value;
+				count++;
 			}
 			else {
-				shiftArray(value);
+				tempShift(value);
 			}
 		}
 	}
@@ -42,13 +43,13 @@ private:
 	int capacity = INITIAL_CAPACITY;
 
 	template<typename T>
-	void resize(T**& arr)
-	{	
-		T** newArr;
-		newArr = new int* [capacity * 2];
+	void resize(T*& arr)
+	{
+		T* newArr;
+		newArr = new T[capacity * 2];
 
 		for (int i = 0; i < count; i++)
-			newArr[i] = new int(*arr[i]);
+			newArr[i] = arr[i];
 
 		cout << endl;
 		delete[] arr;
@@ -58,9 +59,7 @@ private:
 
 	template<typename T>
 	void tempShift(T value) {
-		if (isEmpty()) {
-
-		}
+		dArray[count++] = value;
 	}
 
 	template<typename T>

@@ -8,10 +8,10 @@ template<typename T>
 class CustomDeque {
 public:
 	template<typename T>
-	void addFront(T value) {
+	void addBack(T value) {
 		if (count == capacity || count + 1 == capacity) {
 			resize(dArray);
-			tempShift(value);
+			dArray[count++] = value;
 		}
 		else {
 			if (isEmpty()) {
@@ -19,12 +19,44 @@ public:
 				count++;
 			}
 			else {
-				tempShift(value);
+				dArray[count++] = value;
 			}
 		}
 	}
 
-	bool isEmpty() { return count == 0; }
+	template<typename T>
+	void addFront(T value) {
+		if (count == capacity || count + 1 == capacity) {
+			resize(dArray);
+			shiftByOne(value);
+		}
+		else {
+			if (isEmpty()) {
+				dArray[0] = value;
+				count++;
+			}
+			else {
+				shiftByOne(value);
+			}
+		}
+	}
+
+	template<typename T>
+	void shiftByOne(T value) {
+		// [1000,10,20,30,40,50]
+		// temp = 50
+		//T temp = dArray[count - 1];
+		for (int i = count; i > 0; i--) {
+			// [50,1000,10,20,30,40]
+			dArray[i] = dArray[i - 1];
+		}
+		dArray[0] = value;
+		count++;
+	}
+
+	bool isEmpty() { 
+		return count == 0; 
+	}
 
 	void printQueue() {
 		cout << "Queue elements: ";
@@ -56,13 +88,13 @@ private:
 		arr = newArr;
 		capacity *= 2;
 	}
+	
+};
 
-	template<typename T>
-	void tempShift(T value) {
-		dArray[count++] = value;
-	}
 
-	template<typename T>
+/*
+INEFFICIENT
+template<typename T>
 	void shiftArray(T value) {
 		T* newArr;
 		if (isEmpty()) {
@@ -72,7 +104,7 @@ private:
 		else {
 			newArr = new T[++count];
 			newArr[0] = value;
-			
+
 			int dArrayLength = count;
 			if (dArrayLength > 1) {
 				for (int i = 1; i < dArrayLength; i++) {
@@ -85,7 +117,7 @@ private:
 		}
 		for (int i = 0; i < count; i++)
 			dArray[i] = newArr[i];
-		
+
 		delete[] newArr;
 	}
-};
+*/

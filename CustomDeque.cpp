@@ -1,15 +1,22 @@
 #pragma once
 #include <iostream>
+#include <exception>
 #define INITIAL_CAPACITY 10
 
 using namespace std;
+
+struct NoValuesException : public exception {
+	const char* what() {
+		return "No values in the container";
+	}
+};
 
 template<typename T>
 class CustomDeque {
 public:
 	template<typename T>
 	void addBack(T value) {
-		if (count == capacity || count + 1 == capacity) {
+		if (count == capacity) {
 			resize(dArray);
 			dArray[count++] = value;
 		}
@@ -26,9 +33,9 @@ public:
 
 	template<typename T>
 	void addFront(T value) {
-		if (count == capacity || count + 1 == capacity) {
+		if (count == capacity) {
 			resize(dArray);
-			shiftByOne(value);
+			shiftToRight(value);
 		}
 		else {
 			if (isEmpty()) {
@@ -36,18 +43,58 @@ public:
 				count++;
 			}
 			else {
-				shiftByOne(value);
+				shiftToRight(value);
 			}
 		}
 	}
 
+	T removeFront() {
+		if (count == 0) {
+			throw NoValuesException();
+		}
+		T removed = dArray[0];
+		shiftToLeft();
+		
+		return removed;
+	}
+
+	void shiftToLeft() {
+		count--;
+		T last = dArray[count];
+		for (int i = 0; i < count - 1; i++) {
+			T temp = dArray[i + 1];
+			dArray[i] = temp;
+		}
+		dArray[count - 1] = last;
+	}
+
+	T removeBack() {
+		if (count == 0) {
+			throw NoValuesException();
+		}
+		T removed = dArray[count - 1];
+		remove();
+		return removed;
+	}
+
+	void remove() {
+		count--;
+		T* tempArr = new T[capacity];
+		if (count < capacity) {
+			for (int i = 0; i < count; i++) {
+				tempArr[i] = dArray[i];
+			}
+		}
+		for (int i = 0; i < capacity; i++) {
+			dArray[i] = tempArr[i];
+		}
+		
+		delete[] tempArr;
+	}
+
 	template<typename T>
-	void shiftByOne(T value) {
-		// [1000,10,20,30,40,50]
-		// temp = 50
-		//T temp = dArray[count - 1];
+	void shiftToRight(T value) {
 		for (int i = count; i > 0; i--) {
-			// [50,1000,10,20,30,40]
 			dArray[i] = dArray[i - 1];
 		}
 		dArray[0] = value;
@@ -59,7 +106,7 @@ public:
 	}
 
 	void printQueue() {
-		cout << "Queue elements: ";
+		cout << "Queue elements: \n";
 		for (int i = 0; i < count; i++) cout << dArray[i] << "\n";
 		cout << endl;
 	}
@@ -67,6 +114,20 @@ public:
 	void printInfo() {
 		cout << "Capacity: " << capacity << endl;
 		cout << "Count: " << count << endl;
+	}
+
+	T peekFront() {
+		if (count == 0) throw NoValuesException();
+		return dArray[0];
+	}
+
+	T peekBack() {
+		if (count == 0) throw NoValuesException();
+		return dArray[count - 1];
+	}
+
+	int size() {
+		return count;
 	}
 
 private:
